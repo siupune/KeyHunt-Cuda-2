@@ -71,9 +71,13 @@ KeyHunt::KeyHunt(const std::string& addressFile, const std::vector<unsigned char
 			printf("%s can not open\n", this->addressFile.c_str());
 			exit(1);
 		}
-
+#ifdef WIN64
 		_fseeki64(wfd, 0, SEEK_END);
 		N = _ftelli64(wfd);
+#else
+		fseek(wfd, 0, SEEK_END);
+		N = ftell(wfd);
+#endif
 		N = N / 20;
 		rewind(wfd);
 
@@ -307,7 +311,7 @@ void KeyHunt::checkAddresses(bool compressed, Int key, int i, Point p1)
 		if (checkPrivKey(addr, key, i, compressed)) {
 			nbFoundKey++;
 		}
-}
+	}
 }
 
 void KeyHunt::checkAddresses2(bool compressed, Int key, int i, Point p1)
@@ -727,7 +731,7 @@ void KeyHunt::FindKeyGPU(TH_PARAM * ph)
 			for (int i = 0; i < nbThread; i++) {
 				keys[i].Add((uint64_t)STEP_SIZE);
 			}
-			counters[thId] += (uint64_t)(STEP_SIZE) * nbThread; // Point
+			counters[thId] += (uint64_t)(STEP_SIZE)*nbThread; // Point
 		}
 
 		//ok = g.ClearOutBuffer();
